@@ -252,8 +252,8 @@ std::vector<std::tuple<double, double>> A_Star_Planner::plan() {
 	if (!goalSet) {
 		cout << "No goal set. Returning null" << endl;
 		return std::vector<std::tuple<double, double>>();
-	}
-	
+	}	
+
 	vector<tuple<double, double>> path = vector<tuple<double, double>>();	
 	auto[start_grid_x, start_grid_y] = metersToGrid(start_map_x, start_map_y);	
 	
@@ -312,7 +312,12 @@ bool A_Star_Planner::setGoal(double start_map_x, double start_map_y, double goal
 *  @param resolution Describes the relative scale between the map and the grid (m/cell) */
 void A_Star_Planner::updateMap(int8_t* map, int grid_width, int grid_height, double grid_resolution) {
 	using namespace std;
-		
+	
+	// Prevent the map from being updated while we are actively planning	
+	if (goalSet && !goalReached) {
+                cout << "Original Plan is still calculating. Cannot update map. Returning" << endl;
+        }
+	
 	this->map = map;
         frontier = priority_queue<gridCell*, std::vector<gridCell*>, gridCellCompare>();
 

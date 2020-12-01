@@ -26,35 +26,27 @@ class Planner {
 		// ros::Subscriber map_sub; // = n.subscribe("/map", 1, processMap);
 		int markerCount;
 		bool has_A_Map;
-		bool isPlanningNow; // Use a lock?
-
 };		
 
 /** @brief */
-Planner::Planner() { 
-	
+Planner::Planner() { 	
 	
 	marker_pub = n.advertise<visualization_msgs::Marker>("plan_nodes", 1000);
 	markerCount = 0;	
-	isPlanningNow = false;
+	//isPlanningNow = false;
 	has_A_Map = false;
-	//map_sub = n.subscribe("/map", 1, processMap);
+	//map_sub = n.subscribe("/map", 1, processMap);	
 }
 
 void Planner::processMap(const nav_msgs::OccupancyGrid& newMap) {
 	// std::cout << std::endl << (int)map.data[0] << std::endl;
 	
-	std::vector<int8_t> newOne = newMap.data;
+	std::vector<int8_t> mapCopy = newMap.data; 
 
 	// Save the map in other data structure?
-	if (!isPlanningNow) {
-		my_A_Star_Planner.updateMap(newOne.data(), (int)newMap.info.width, (int)newMap.info.height, (double)newMap.info.resolution);
-	}
-	else { 
-		// Save the map in other data structure? Add a way to cancel a plan in the A_Star class?
-		std::cout << "Cannot set a plan right now because the current one is still calculating " << std::endl;
-	}
-
+	// Planner will prevent the update if it is already planning but has not yet found a plan  
+	my_A_Star_Planner.updateMap(mapCopy.data(), newMap.info.width, newMap.info.height, newMap.info.resolution);
+	
 	return;
 }
 
@@ -67,7 +59,7 @@ bool Planner::startPlanning(motion_planning::plan::Request& request, motion_plan
 		
 	publishMarker(request.start_map_x, request.start_map_y);
         publishMarker(request.goal_map_x, request.goal_map_y);
-
+	
 	return true; 
 }
 
@@ -142,7 +134,7 @@ int main(int argc, char **argv) {
 	
 	Planner myPlanner = Planner();
 	
-	ros::Subscriber map_sub = n.subscribe("/map", 1,&Planner::processMap, &myPlanner);
+	ros::Subscriber map_sub = n.subscribe("/map", 1, &Planner::processMap, &myPlanner);
 	
 	ros::ServiceServer service = n.advertiseService("StartPlanning", &Planner::startPlanning, &myPlanner);
 			
