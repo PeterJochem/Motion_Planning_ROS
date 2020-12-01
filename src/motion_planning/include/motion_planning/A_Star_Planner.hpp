@@ -37,7 +37,7 @@ class A_Star_Planner {
 		 *  @param height Height of the map in grid units
 		 *  @param width Width of the map in grid units 
 		 *  @param resolution Describes the relative scale between the map and the grid (m/cell) */
-		A_Star_Planner(int* map, int height, int width, double resolution);
+		A_Star_Planner(int8_t* map, int height, int width, double resolution);
 		
 		//void processMap(const nav_msgs::OccupancyGrid& map);	
 			
@@ -59,7 +59,7 @@ class A_Star_Planner {
                 *  @param height Height of the map in grid units
                 *  @param width Width of the map in grid units 
                 *  @param resolution The relative scale between the map and the grid (m/cell) */
-                void updateMap(int* map, int width, int height, double resolution);	
+                void updateMap(int8_t* map, int width, int height, double resolution);	
 
 	private:
 		// Priority queue of pointers to the static grid vector below
@@ -67,7 +67,7 @@ class A_Star_Planner {
 		std::vector<gridCell> grid; // Linear vector represents the map in row major order
 
 		//nav_msgs::OccupancyGrid map;
-		int* map; // Linear array of occupancy probabilities (from nav_msgs::OccupancyGrid)
+		int8_t* map; // Linear array of occupancy probabilities (from nav_msgs::OccupancyGrid)
 
 		int grid_height, grid_width, goal_grid_x, goal_grid_y;
 		int prob_threshold; // Arbitary probability where we will consider paths through

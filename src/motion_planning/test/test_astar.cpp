@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-std::tuple<std::vector<int>, int, int> readGrid(std::string fileName) {
+std::tuple<std::vector<int8_t>, int, int> readGrid(std::string fileName) {
 	using namespace std;
 
 	ifstream myFile(fileName);
@@ -34,7 +34,7 @@ std::tuple<std::vector<int>, int, int> readGrid(std::string fileName) {
 	int width = 0;
 	int height = 0;
 
-	vector<int> grid = vector<int>();
+	vector<int8_t> grid = vector<int8_t>();
 	
 	// Read in the grid data itself
 	while(std::getline(myFile, line)) {

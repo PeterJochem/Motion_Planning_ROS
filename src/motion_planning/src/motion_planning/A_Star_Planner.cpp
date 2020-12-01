@@ -22,7 +22,7 @@
  *  @param grid_height The height of the grid
  *  @param grid_width The width of the grid
  *  @param grid_resolution Determines ratio between grid units and map units - ratio of meters/cell */
-A_Star_Planner::A_Star_Planner(int* map, int grid_height, int grid_width, double grid_resolution) {
+A_Star_Planner::A_Star_Planner(int8_t* map, int grid_height, int grid_width, double grid_resolution) {
         using namespace std;
 
         this->map = map;
@@ -310,7 +310,7 @@ bool A_Star_Planner::setGoal(double start_map_x, double start_map_y, double goal
 *  @param height Height of the map in grid units
 *  @param width Width of the map in grid units 
 *  @param resolution Describes the relative scale between the map and the grid (m/cell) */
-void A_Star_Planner::updateMap(int* map, int grid_width, int grid_height, double grid_resolution) {
+void A_Star_Planner::updateMap(int8_t* map, int grid_width, int grid_height, double grid_resolution) {
 	using namespace std;
 		
 	this->map = map;

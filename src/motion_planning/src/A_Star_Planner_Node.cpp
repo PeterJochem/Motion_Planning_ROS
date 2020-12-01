@@ -4,33 +4,121 @@
 #include "motion_planning/plan.h"
 #include "ros/ros.h"
 
+#include <visualization_msgs/Marker.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <sstream>
 #include <stdlib.h>
 #include <tf/tf.h>
 
-/*
-class Plan_Node { 
+
+class Planner { 
 
 	public:
-		void processMap(const nav_msgs::OccupancyGrid& map);
 		bool startPlanning(motion_planning::plan::Request& request, motion_planning::plan::Response& response);
-		//A_Star_Planner myPlanner = A_Star_Planner(nullptr, 1, 1, 100);
-};
+		void publishMarker(double x, double y);
+		void processMap(const nav_msgs::OccupancyGrid& newMap);
+		Planner();	
+		A_Star_Planner my_A_Star_Planner = A_Star_Planner(nullptr, 1, 1, 1);		
+	private:
+		ros::NodeHandle n;		
+		ros::Publisher marker_pub;
+		// ros::Subscriber map_sub; // = n.subscribe("/map", 1, processMap);
+		int markerCount;
+		bool has_A_Map;
+		bool isPlanningNow; // Use a lock?
 
-void Plan_Node::processMap(const nav_msgs::OccupancyGrid& map) {
+};		
+
+/** @brief */
+Planner::Planner() { 
+	
+	
+	marker_pub = n.advertise<visualization_msgs::Marker>("plan_nodes", 1000);
+	markerCount = 0;	
+	isPlanningNow = false;
+	has_A_Map = false;
+	//map_sub = n.subscribe("/map", 1, processMap);
+}
+
+void Planner::processMap(const nav_msgs::OccupancyGrid& newMap) {
 	// std::cout << std::endl << (int)map.data[0] << std::endl;
+	
+	std::vector<int8_t> newOne = newMap.data;
+
+	// Save the map in other data structure?
+	if (!isPlanningNow) {
+		my_A_Star_Planner.updateMap(newOne.data(), (int)newMap.info.width, (int)newMap.info.height, (double)newMap.info.resolution);
+	}
+	else { 
+		// Save the map in other data structure? Add a way to cancel a plan in the A_Star class?
+		std::cout << "Cannot set a plan right now because the current one is still calculating " << std::endl;
+	}
+
 	return;
 }
 
-bool Plan_Node::startPlanning(motion_planning::plan::Request& request, motion_planning::plan::Response& response) {
+bool Planner::startPlanning(motion_planning::plan::Request& request, motion_planning::plan::Response& response) {
+	
+	// A_Star_Planner::updateMap(int* map, int grid_width, int grid_height, double grid_resolution)	
 
 	// setGoal(double start_map_x, double start_map_y, double goal_map_x, double goal_map_y)
-	response.isPlanLegal = myPlanner.setGoal(request.start_map_x, request.start_map_y, request.goal_map_x, request.goal_map_y);
+	response.isPlanLegal = my_A_Star_Planner.setGoal(request.start_map_x, request.start_map_y, request.goal_map_x, request.goal_map_y);
+		
+	publishMarker(request.start_map_x, request.start_map_y);
+        publishMarker(request.goal_map_x, request.goal_map_y);
+
 	return true; 
 }
-*/
+
+
+/** @brief  */
+void Planner::publishMarker(double x, double y) {
+	// Draw a square in the start and goal locations in Gazebo and RVIZ     
+        // Set our initial shape type to be a cube
+        uint32_t shape = visualization_msgs::Marker::CUBE;
+        visualization_msgs::Marker marker;
+
+        // Set the frame ID and timestamp.  See the TF tutorials for information on these.
+        marker.header.frame_id = "map"; // base_frame_id;
+        marker.header.stamp = ros::Time::now();
+
+        // Set the namespace and id for this marker.  This serves to create a unique ID
+        // Any marker sent with the same namespace and id will overwrite the old one
+        marker.ns = "basic_shapes";
+        marker.id = markerCount;
+        markerCount++;
+
+        // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
+        marker.type = shape;
+        marker.action = visualization_msgs::Marker::ADD;
+
+        // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+        marker.pose.position.x = x;
+        marker.pose.position.y = y;
+        marker.pose.position.z = 0;
+        marker.pose.orientation.x = 0.0;
+        marker.pose.orientation.y = 0.0;
+        marker.pose.orientation.z = 0.0;
+        marker.pose.orientation.w = 1.0;
+
+        // Set the scale of the marker -- 1x1x1 here means 1m on a side
+        marker.scale.x = 0.05;
+        marker.scale.y = 0.05;
+        marker.scale.z = 0.05;
+
+        // Set the color -- be sure to set alpha to something non-zero!
+        marker.color.r = 0.0f;
+        marker.color.g = 0.0f;
+        marker.color.b = 1.0f;
+        marker.color.a = 0.5;
+
+        marker.lifetime = ros::Duration(); // Marker will not vanish
+        marker_pub.publish(marker);
+}	
+
+
+
 
 int main(int argc, char **argv) {
 
@@ -51,7 +139,13 @@ int main(int argc, char **argv) {
         //A_Star_Planner(int* map, int height, int width, int resolution);
         //A_Star_Planner myPlanner = A_Star_Planner(nullptr, 1, 1, 100);
         //ros::Subscriber map_sub = n.subscribe("/map", 1, processMap);
-		
+	
+	Planner myPlanner = Planner();
+	
+	ros::Subscriber map_sub = n.subscribe("/map", 1,&Planner::processMap, &myPlanner);
+	
+	ros::ServiceServer service = n.advertiseService("StartPlanning", &Planner::startPlanning, &myPlanner);
+			
 	
         while (ros::ok()) {
                 ros::spinOnce();
