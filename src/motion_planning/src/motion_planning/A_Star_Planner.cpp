@@ -146,8 +146,8 @@ double A_Star_Planner::manhattanDistance(int grid_x, int grid_y) {
  *  @return A tuple of the (x, y) point in the map frame (meters) */
 std::tuple<double, double> A_Star_Planner::gridToMeters(int grid_x, int grid_y) {
 
-	double x_map = grid_x / grid_resolution; 			
-	double y_map = grid_y / grid_resolution;
+	double x_map = grid_x * grid_resolution; 			
+	double y_map = grid_y * grid_resolution;
 		
 	return {x_map, y_map};
 }
@@ -222,12 +222,20 @@ std::vector<std::tuple<double, double>> A_Star_Planner::backtrack() {
 	vector<tuple<double, double>> path = vector<tuple<double, double>>();
 
 	while (currentCell->parent != nullptr) {
-				
-		path.push_back(make_tuple(currentCell->x, currentCell->y));
+		
+		auto[nextX, nextY] = gridToMeters(currentCell->x, currentCell->y);
+		
+		path.push_back(make_tuple(nextX, nextY));
+		//path.push_back(make_tuple(currentCell->x, currentCell->y));
 		currentCell = currentCell->parent;
 	}
-
-	path.push_back(make_tuple(currentCell->x, currentCell->y));
+	
+	// Convert back to meters	
+	auto[nextX, nextY] = gridToMeters(currentCell->x, currentCell->y);
+	
+	path.push_back(make_tuple(nextX, nextY));
+	//path.push_back(make_tuple(currentCell->x, currentCell->y));
+	
 	std::reverse(path.begin(), path.end());
 	return path;	
 }
@@ -293,7 +301,9 @@ bool A_Star_Planner::setGoal(double start_map_x, double start_map_y, double goal
 
 	std::tie(goal_grid_x, goal_grid_y) = goalToGrid(goal_map_x, goal_map_y);    
 	auto[start_grid_x, start_grid_y] = metersToGrid(start_map_x, start_map_y);	
-		
+	
+	std::cout << "The start point and end points in meters are " << "(" << start_grid_x << ", "<< start_grid_x << ")" << 
+
 	// Make sure the goal is legal
 	if (!isLegal(start_grid_x, start_grid_y) || !isFree(start_grid_x, start_grid_y) || 
 			!isLegal(goal_grid_x, goal_grid_y) || !isFree(goal_grid_x, goal_grid_y)) {
@@ -323,7 +333,7 @@ void A_Star_Planner::updateMap(int8_t* map, int grid_width, int grid_height, dou
 
         this->grid_height = grid_height;
         this->grid_width = grid_width;
-        this->grid_resolution = grid_resolution;
+        this->grid_resolution = grid_resolution; // How nav_msgs measures this
         prob_threshold = 50; // Make this a parameter on the ROS server
 
         // Remember to delete this

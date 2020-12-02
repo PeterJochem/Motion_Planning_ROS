@@ -2,7 +2,7 @@
 <package format="2">
   <name>motion_planning</name>
   <version>1.0.0</version>
-  <description>Gazebo interface for the turtlebot</description>
+  <description>Motion Planning in ROS</description>
 
   <maintainer email="peterjochem2020@u.northwestern.edu">Peter Jochem</maintainer>
   <license>MIT</license>

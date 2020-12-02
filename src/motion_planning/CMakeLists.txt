@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
+  visualization_msgs
   nav_msgs
   rospy
   roscpp
