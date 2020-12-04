@@ -65,7 +65,7 @@ TEST(A_Star_Planner, simplePath1) {
 	auto[grid, width, height] = readGrid(fileName); 
 
 	// int* map, int height, int width, int resolution)
-	A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+	A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 	
 	// start_x, start_y, goal_x, goal_y	
 	myPlanner.setGoal(0.0, 0.0, 7.0, 7.0);
@@ -80,7 +80,7 @@ TEST(A_Star_Planner, simplePath2) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         myPlanner.setGoal(0.0, 0.0, 3.0, 7.0);
@@ -97,7 +97,7 @@ TEST(A_Star_Planner, multiplePathsPossible_1) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         myPlanner.setGoal(0.0, 0.0, 3.0, 7.0);
@@ -114,7 +114,7 @@ TEST(A_Star_Planner, multiplePathsPossible_2) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         myPlanner.setGoal(0.0, 0.0, 6.0, 7.0);
@@ -131,7 +131,7 @@ TEST(A_Star_Planner, goalIsOutsideMap) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(0.0, 0.0, 5.0, 7.0), false);
@@ -145,7 +145,7 @@ TEST(A_Star_Planner, startPointIsOutsideMap) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(-20.0, -200.0, 3.0, 2.0), false);
@@ -160,7 +160,7 @@ TEST(A_Star_Planner, startPointIsGoalPoint) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(0.0, 0.0, 0.0, 0.0), true);
@@ -177,7 +177,7 @@ TEST(A_Star_Planner, startNodeIsNotFree) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(2.0, 2.0, 0.0, 0.0), false);
@@ -192,7 +192,7 @@ TEST(A_Star_Planner, replanning_1) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(2.0, 2.0, 0.0, 0.0), false);
@@ -212,7 +212,7 @@ TEST(A_Star_Planner, replanning_2) {
         auto[grid, width, height] = readGrid(fileName);
 
         // int* map, int height, int width, int resolution)
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 
         // start_x, start_y, goal_x, goal_y
         ASSERT_EQ(myPlanner.setGoal(2.0, 2.0, 0.0, 0.0), false);
@@ -230,7 +230,7 @@ TEST(A_Star_Planner, updateMap) {
         // Must use the absolute path because where the binary runs is not in this folder with the source file
         string fileName = "test_grids/AStar/grid3.csv";
 	auto[grid, width, height] = readGrid(fileName);
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1, 0.0, 0.0);
 	
 	fileName = "test_grids/AStar/grid2.csv";	
 	tie(grid, width, height) = readGrid(fileName);
@@ -276,7 +276,7 @@ TEST(A_Star_Planner, variableResolution_1) {
         // Must use the absolute path because where the binary runs is not in this folder with the source file
         string fileName = "test_grids/AStar/grid5.csv";
         auto[grid, width, height] = readGrid(fileName);
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 0.33);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 0.33, 0.0, 0.0);
 	
 	// We set the goal in the map frame 	
         myPlanner.setGoal(0.0, 0.0, 2.8, 2.8);
@@ -291,7 +291,7 @@ TEST(A_Star_Planner, variableResolution_2) {
         // Must use the absolute path because where the binary runs is not in this folder with the source file
         string fileName = "test_grids/AStar/grid5.csv";
         auto[grid, width, height] = readGrid(fileName);
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 4.0);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 4.0, 0.0, 0.0);
 
         // We set the goal in the map frame     
         myPlanner.setGoal(0.0, 0.0, 35.8, 35.8);
@@ -307,7 +307,7 @@ TEST(A_Star_Planner, legalGoal_But_No_Path) {
         // Must use the absolute path because where the binary runs is not in this folder with the source file
         string fileName = "test_grids/AStar/grid6.csv";
         auto[grid, width, height] = readGrid(fileName);
-        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1.0);
+        A_Star_Planner myPlanner = A_Star_Planner(grid.data(), height, width, 1.0, 0.0, 0.0);
 
         // We set the goal in the map frame     
         myPlanner.setGoal(0.0, 0.0, 7, 7);

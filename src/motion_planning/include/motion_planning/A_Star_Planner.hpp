@@ -36,8 +36,10 @@ class A_Star_Planner {
 		 *  	   [-1, 100] where -1 means unknown
 		 *  @param height Height of the map in grid units
 		 *  @param width Width of the map in grid units 
-		 *  @param resolution Describes the relative scale between the map and the grid (m/cell) */
-		A_Star_Planner(int8_t* map, int height, int width, double resolution);
+		 *  @param resolution Describes the relative scale between the map and the grid (m/cell) 
+		 *  @param x_offset DESCRIBE ME
+		 *  @param y_offset DESCRIBE ME */
+		A_Star_Planner(int8_t* map, int height, int width, double resolution, double x_offset, double y_offset);
 		
 		//void processMap(const nav_msgs::OccupancyGrid& map);	
 			
@@ -70,6 +72,7 @@ class A_Star_Planner {
 		int8_t* map; // Linear array of occupancy probabilities (from nav_msgs::OccupancyGrid)
 
 		int grid_height, grid_width, goal_grid_x, goal_grid_y;
+		double x_offset, y_offset;
 		int prob_threshold; // Arbitary probability where we will consider paths through
 		
 		double goal_map_x, goal_map_y, start_map_x, start_map_y, grid_resolution;

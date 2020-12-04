@@ -23,7 +23,7 @@ class Planner {
 		void publishMarker(double x, double y);
 		void processMap(const nav_msgs::OccupancyGrid& newMap);
 		Planner();	
-		A_Star_Planner my_A_Star_Planner = A_Star_Planner(nullptr, 1, 1, 1);		
+		A_Star_Planner my_A_Star_Planner = A_Star_Planner(nullptr, 1, 1, 1, -100, -100);		
 	private:
 		void plotPath(std::vector<std::tuple<double, double>>); 
 		ros::NodeHandle n;		
@@ -181,7 +181,6 @@ void Planner::plotPath(std::vector<std::tuple<double, double>> path) {
 
 	path_pub.publish(markerarray);
 }
-
 
 
 int main(int argc, char **argv) {

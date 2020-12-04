@@ -22,7 +22,7 @@
  *  @param grid_height The height of the grid
  *  @param grid_width The width of the grid
  *  @param grid_resolution Determines ratio between grid units and map units - ratio of meters/cell */
-A_Star_Planner::A_Star_Planner(int8_t* map, int grid_height, int grid_width, double grid_resolution) {
+A_Star_Planner::A_Star_Planner(int8_t* map, int grid_height, int grid_width, double grid_resolution, double x_offset, double y_offset) {
         using namespace std;
 
         this->map = map;
@@ -31,6 +31,8 @@ A_Star_Planner::A_Star_Planner(int8_t* map, int grid_height, int grid_width, dou
         this->grid_height = grid_height;
         this->grid_width = grid_width;
         this->grid_resolution = grid_resolution;
+	this->x_offset = x_offset;
+	this->y_offset = y_offset;
         prob_threshold = 50; // Make this a parameter on the ROS server
 
         // Remember to delete this
@@ -146,8 +148,8 @@ double A_Star_Planner::manhattanDistance(int grid_x, int grid_y) {
  *  @return A tuple of the (x, y) point in the map frame (meters) */
 std::tuple<double, double> A_Star_Planner::gridToMeters(int grid_x, int grid_y) {
 
-	double x_map = grid_x * grid_resolution; 			
-	double y_map = grid_y * grid_resolution;
+	double x_map = (grid_x * grid_resolution); 			
+	double y_map = (grid_y * grid_resolution);
 		
 	return {x_map, y_map};
 }
@@ -180,8 +182,8 @@ gridCell* A_Star_Planner::getGridCellPtr(int grid_x, int grid_y) {
 std::tuple<int, int> A_Star_Planner::metersToGrid(double map_x, double map_y) {
 	using namespace std;
         
-	int x_grid = map_x / grid_resolution; // Truncates the fractional part
-        int y_grid = map_y / grid_resolution;
+	int x_grid = (map_x / grid_resolution); // Truncates the fractional part
+        int y_grid = (map_y / grid_resolution);
 	return {x_grid, y_grid};
 }
 
@@ -190,7 +192,9 @@ std::tuple<int, int> A_Star_Planner::metersToGrid(double map_x, double map_y) {
  *  @param map_y The coordinate's y position
  *  @return A tuple of the (x, y) location in the grid system */
 std::tuple<int, int> A_Star_Planner::goalToGrid(double map_x, double map_y) {
-
+		
+	map_x = map_x + x_offset;
+	map_y = map_y + y_offset;
 	auto[x_grid, y_grid] = metersToGrid(map_x, map_y);
 	
 	// Check for -grid indexes
@@ -300,8 +304,18 @@ bool A_Star_Planner::setGoal(double start_map_x, double start_map_y, double goal
 	this->start_map_y = start_map_y;
 
 	std::tie(goal_grid_x, goal_grid_y) = goalToGrid(goal_map_x, goal_map_y);    
-	auto[start_grid_x, start_grid_y] = metersToGrid(start_map_x, start_map_y);	
+	goal_grid_x = goal_grid_x * -1;
+	goal_grid_y = goal_grid_y * -1;
+	std::cout << "goal_grid_x is " << goal_grid_x << ", goal_grid_y is " << goal_grid_y << std::endl;  
 	
+	start_map_x = start_map_x + x_offset;
+	start_map_y = start_map_y + y_offset;
+	auto[start_grid_x, start_grid_y] = metersToGrid(start_map_x, start_map_y);	
+	start_grid_x = start_grid_x * -1;
+	start_grid_y = start_grid_y * -1;
+	std::cout << "start_grid_x is " << start_grid_x << ", start_grid_y is " << start_grid_y << std::endl;
+
+
 	//std::cout << "The start point and end points in meters are " << "(" << start_grid_x << ", "<< start_grid_x << ")" << 
 
 	// Make sure the goal is legal
