@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <tf/tf.h>
 
+#include <tf2_ros/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
 
 class Planner { 
 
@@ -46,6 +48,8 @@ Planner::Planner() {
 void Planner::processMap(const nav_msgs::OccupancyGrid& newMap) {
 	// std::cout << std::endl << (int)map.data[0] << std::endl;
 	
+	std::cout << "newMap: " << newMap.info.origin.position; 
+	std::cout << "newMap: " << newMap.info.origin.orientation;
 	std::vector<int8_t> mapCopy = newMap.data; 
 
 	// Save the map in other data structure?
@@ -205,10 +209,26 @@ int main(int argc, char **argv) {
 	ros::Subscriber map_sub = n.subscribe("/map", 1, &Planner::processMap, &myPlanner);	
 	ros::ServiceServer service = n.advertiseService("StartPlanning", &Planner::startPlanning, &myPlanner);	
 	
+	tf2_ros::Buffer tfBuffer;
+  	tf2_ros::TransformListener tfListener(tfBuffer);
+
         while (ros::ok()) {
                 ros::spinOnce();
                 // Check if there are new map messages, if so, refresh data/look to refresh data
-        }	
+        
+    		geometry_msgs::TransformStamped transformStamped;
+		try{
+      			transformStamped = tfBuffer.lookupTransform("base_link", "map", ros::Time(0));
+			//std::cout << transformStamped.transform.translation.y << std::endl;
+    		}
+    		catch (tf2::TransformException &ex) {
+      			//ROS_WARN("%s",ex.what());
+     	 		//ros::Duration(1.0).sleep();
+     	 		continue;
+    		}
+			
+	
+	}	
 	
 
         return 0;

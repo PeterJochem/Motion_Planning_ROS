@@ -13,7 +13,7 @@
 	
 	
 	<group if="$(arg use_Astar)">
-           	<node name="AStar_Planning_Node" pkg="motion_planning" type="A_Star_Planner_Node" machine="PeterJochem">
+           	<node name="AStar_Planning_Node" pkg="motion_planning" type="A_Star_Planner_Node" machine="PeterJochem" output="screen">
                         <!-- param name="use_gui" value="$(arg use_jsp_gui)" / -->
            	</node>
 	</group>

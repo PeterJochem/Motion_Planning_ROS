@@ -302,7 +302,7 @@ bool A_Star_Planner::setGoal(double start_map_x, double start_map_y, double goal
 	std::tie(goal_grid_x, goal_grid_y) = goalToGrid(goal_map_x, goal_map_y);    
 	auto[start_grid_x, start_grid_y] = metersToGrid(start_map_x, start_map_y);	
 	
-	std::cout << "The start point and end points in meters are " << "(" << start_grid_x << ", "<< start_grid_x << ")" << 
+	//std::cout << "The start point and end points in meters are " << "(" << start_grid_x << ", "<< start_grid_x << ")" << 
 
 	// Make sure the goal is legal
 	if (!isLegal(start_grid_x, start_grid_y) || !isFree(start_grid_x, start_grid_y) || 
